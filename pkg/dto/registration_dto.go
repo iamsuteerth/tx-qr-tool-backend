@@ -14,7 +14,7 @@ type CreateRegistrationRequest struct {
 	Designation string `json:"designation,omitempty"`
 	MktSource   string `json:"mkt_source,omitempty"`
 	FoodPref    string `json:"food_pref" binding:"required"`
-	TShirt      string `json:"t-shirt" binding:"required,oneof=S M L XL XXL XXXL"`
+	TShirt      string `json:"t_shirt" binding:"required,oneof=S M L XL XXL XXXL"`
 }
 
 func (r *CreateRegistrationRequest) Validate() []utils.ValidationError {

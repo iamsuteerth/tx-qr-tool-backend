@@ -26,7 +26,6 @@ func NewRegistrationService(repo repository.RegistrationRepository) Registration
 }
 
 func (s *registrationService) CreateRegistration(req *dto.CreateRegistrationRequest) (*dto.RegistrationResponse, error) {
-	// Validate request
 	if validationErrors := req.Validate(); len(validationErrors) > 0 {
 		return nil, &utils.AppError{
 			HTTPCode:         400,
@@ -36,23 +35,20 @@ func (s *registrationService) CreateRegistration(req *dto.CreateRegistrationRequ
 		}
 	}
 
-	// Check for duplicate email
 	existingReg, err := s.repo.GetByEmail(req.Email)
 	if err == nil && existingReg != nil {
 		return nil, utils.NewBadRequestError("DUPLICATE_EMAIL", "Email already registered", nil)
 	}
 
-	// Check for duplicate phone
-	existingRegByPhone, err := s.repo.GetByPhone(req.Phone) // Phone is now string
+	existingRegByPhone, err := s.repo.GetByPhone(req.Phone)
 	if err == nil && existingRegByPhone != nil {
 		return nil, utils.NewBadRequestError("DUPLICATE_PHONE", "Phone number already registered", nil)
 	}
 
-	// Create registration model
 	registration := &models.Registration{
 		FullName:    req.FullName,
 		Email:       req.Email,
-		Phone:       req.Phone, // Phone is now string
+		Phone:       req.Phone, 
 		OrgName:     req.OrgName,
 		Designation: req.Designation,
 		MktSource:   req.MktSource,
@@ -60,18 +56,16 @@ func (s *registrationService) CreateRegistration(req *dto.CreateRegistrationRequ
 		TShirt:      req.TShirt,
 	}
 
-	// Save to database
 	createdReg, err := s.repo.Create(registration)
 	if err != nil {
 		return nil, err
 	}
 
-	// Convert to response DTO
 	return &dto.RegistrationResponse{
 		ID:          createdReg.ID,
 		FullName:    createdReg.FullName,
 		Email:       createdReg.Email,
-		Phone:       createdReg.Phone, // Phone is now string
+		Phone:       createdReg.Phone,
 		OrgName:     createdReg.OrgName,
 		Designation: createdReg.Designation,
 		MktSource:   createdReg.MktSource,
@@ -90,7 +84,6 @@ func (s *registrationService) GenerateCSV() ([]byte, error) {
 	var buf bytes.Buffer
 	writer := csv.NewWriter(&buf)
 
-	// Write header
 	header := []string{
 		"ID",
 		"Full Name",
@@ -100,20 +93,19 @@ func (s *registrationService) GenerateCSV() ([]byte, error) {
 		"Designation",
 		"Marketing Source",
 		"Food Preference",
-		"T-Shirt Size",
+		"t_shirt Size",
 		"Created On",
 	}
 	if err := writer.Write(header); err != nil {
 		return nil, utils.NewInternalServerError("CSV_ERROR", "Failed to write CSV header", err)
 	}
 
-	// Write data
 	for _, reg := range registrations {
 		record := []string{
 			strconv.Itoa(reg.ID),
 			reg.FullName,
 			reg.Email,
-			reg.Phone, // Phone is now string, no conversion needed
+			reg.Phone, 
 			reg.OrgName,
 			reg.Designation,
 			reg.MktSource,

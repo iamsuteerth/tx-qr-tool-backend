@@ -14,7 +14,7 @@ type RegistrationRepository interface {
 	Create(registration *models.Registration) (*models.Registration, error)
 	GetAll() ([]models.Registration, error)
 	GetByEmail(email string) (*models.Registration, error)
-	GetByPhone(phone string) (*models.Registration, error) // Changed parameter type
+	GetByPhone(phone string) (*models.Registration, error)
 }
 
 type registrationRepository struct {

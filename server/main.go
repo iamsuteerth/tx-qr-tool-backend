@@ -28,34 +28,27 @@ func main() {
 	db := config.GetDBConnection()
 	defer config.CloseDBConnection()
 
-	// Initialize repositories
 	registrationRepo := repository.NewRegistrationRepository(db)
 
-	// Initialize services
 	registrationService := service.NewRegistrationService(registrationRepo)
 
-	// Initialize controllers
 	registrationController := controller.NewRegistrationController(registrationService)
 
 	router := gin.Default()
 
-	// Middleware
 	router.Use(request_id.RequestIDMiddleware())
 	router.Use(cors.SetupCORS())
 	router.Use(security.APIKeyAuthMiddleware())
 
-	// Health check
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status": "healthy",
 		})
 	})
 
-	// Registration routes
 	router.POST("/register", registrationController.Register)
 	router.GET("/download-csv", registrationController.DownloadCSV)
 
-	// 404 handler
 	router.NoRoute(func(c *gin.Context) {
 		requestID := utils.GetRequestID(c)
 		c.JSON(http.StatusNotFound, gin.H{

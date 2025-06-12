@@ -19,7 +19,6 @@ func NewRegistrationController(service service.RegistrationService) *Registratio
 	return &RegistrationController{service: service}
 }
 
-// POST /register
 func (rc *RegistrationController) Register(c *gin.Context) {
 	requestID := utils.GetRequestID(c)
 
@@ -38,7 +37,6 @@ func (rc *RegistrationController) Register(c *gin.Context) {
 	utils.SendCreatedResponse(c, "Registration created successfully", requestID, response)
 }
 
-// GET /download-csv
 func (rc *RegistrationController) DownloadCSV(c *gin.Context) {
 	requestID := utils.GetRequestID(c)
 
